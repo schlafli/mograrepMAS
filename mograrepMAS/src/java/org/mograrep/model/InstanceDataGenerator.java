@@ -25,7 +25,7 @@ public interface InstanceDataGenerator {
 	 * @param chain The chain of IRIs leading to the concept for which we want to generate data
 	 * @return Returns a value [0..1], 1.0 corresponding to a perfect match, and 0.0 a complete mismatch
 	 */
-	public float matchType(List<IRI> chain);
+	public double matchType(List<IRI> chain);
 	
 	/**
 	 * Generates a list of data for a given context chain

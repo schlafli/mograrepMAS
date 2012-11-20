@@ -59,25 +59,25 @@ public class IDGManager {
 	}
 
 	public InstanceDataGenerator getMostApplicableGenerator(final List<IRI> chain){
-		SimpleMapReduce<Pair<InstanceDataGenerator, Integer>, Triplet<InstanceDataGenerator, Float, Integer>, InstanceDataGenerator> smr = new SimpleMapReduce<Pair<InstanceDataGenerator,Integer>, Triplet<InstanceDataGenerator, Float, Integer>, InstanceDataGenerator>();
-		MapFunction<Pair<InstanceDataGenerator, Integer>, Triplet<InstanceDataGenerator, Float, Integer>> mapF = new MapFunction<Pair<InstanceDataGenerator,Integer>, Triplet<InstanceDataGenerator, Float, Integer>>() {
+		SimpleMapReduce<Pair<InstanceDataGenerator, Integer>, Triplet<InstanceDataGenerator, Double, Integer>, InstanceDataGenerator> smr = new SimpleMapReduce<Pair<InstanceDataGenerator,Integer>, Triplet<InstanceDataGenerator, Double, Integer>, InstanceDataGenerator>();
+		MapFunction<Pair<InstanceDataGenerator, Integer>, Triplet<InstanceDataGenerator, Double, Integer>> mapF = new MapFunction<Pair<InstanceDataGenerator,Integer>, Triplet<InstanceDataGenerator, Double, Integer>>() {
 
-			public Triplet<InstanceDataGenerator, Float, Integer> f(
+			public Triplet<InstanceDataGenerator, Double, Integer> f(
 					Pair<InstanceDataGenerator, Integer> p) {
-				Triplet<InstanceDataGenerator, Float, Integer> rValue = new Triplet<InstanceDataGenerator, Float, Integer>(p.getValue0(), p.getValue0().matchType(chain), p.getValue1());
+				Triplet<InstanceDataGenerator, Double, Integer> rValue = new Triplet<InstanceDataGenerator, Double, Integer>(p.getValue0(), p.getValue0().matchType(chain), p.getValue1());
 				return rValue;
 			}
 		};
-		ReduceFunction<Triplet<InstanceDataGenerator, Float, Integer>, InstanceDataGenerator> reduceF = new ReduceFunction<Triplet<InstanceDataGenerator, Float, Integer>, InstanceDataGenerator>() {
+		ReduceFunction<Triplet<InstanceDataGenerator, Double, Integer>, InstanceDataGenerator> reduceF = new ReduceFunction<Triplet<InstanceDataGenerator, Double, Integer>, InstanceDataGenerator>() {
 
 			public InstanceDataGenerator reduce(
-					List<Triplet<InstanceDataGenerator, Float, Integer>> in) {
+					List<Triplet<InstanceDataGenerator, Double, Integer>> in) {
 				if(in.size()==0){
 					return null;
 				}
-				float tolerance = 0.001f;
+				double tolerance = 0.001f;
 				InstanceDataGenerator idg = in.get(0).getValue0();
-				float maxF = in.get(0).getValue1();
+				double maxF = in.get(0).getValue1();
 				int priorityMax = in.get(0).getValue2();
 
 				for(int i=1;i<in.size();i++){
@@ -101,6 +101,7 @@ public class IDGManager {
 				return idg;
 			}
 		};
+		
 		return smr.mapReduce(mapF, reduceF, generators.iterator());
 	}
 
